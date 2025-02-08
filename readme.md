@@ -1,0 +1,17 @@
+- generateKey : string
+- key : string
+- saveKey(filename)
+- password
+- cypher : string
+- encryptBuffer(buffer) : buffer
+- decryptBuffer(buffer) : buffer
+- encryptFile(srcFilename, dstFilename)
+- decryptFile(srcFilename, dstFilename)
+- encryptJSON(data) : buffer
+- decryptJSON(buffer): JSON
+- loadBuffer(filename)
+- saveBuffer(filename, buffer)
+  -LoadJSON(filename) : json
+- saveJSON(filename,json)
+- encryptDotEnv(filename)
+- decryptDotEnv(filename)
