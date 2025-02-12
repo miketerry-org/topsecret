@@ -1,5 +1,16 @@
-- generateKey : string
+CLI:
+
+--encrypt-file <infile> <outFile>
+-- decrypt-file <inFile> <outFile>
+-- generate-key <outFile>. // if no file then print to console-- password-key
+-- password-key <password> <outFile> // if no file then print to console
+
+====
+--random-key
+-- password-key
+
 - key : string
+-
 - saveKey(filename)
 - password
 - cypher : string

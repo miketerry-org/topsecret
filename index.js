@@ -19,9 +19,9 @@ class TopSecret {
    * Generates a random 256-bit key (32 bytes) for encryption.
    * @returns {Buffer} The generated 256-bit AES key.
    */
-  genKey() {
+  get randomKey() {
     this._key = crypto.randomBytes(32);
-    return this._key;
+    return this._key.toString("hex");
   }
 
   /**
@@ -121,7 +121,7 @@ class TopSecret {
    * @returns {Buffer} The current AES key.
    */
   get key() {
-    return this._key;
+    return this._key.toString("hex");
   }
 
   /**
@@ -130,10 +130,11 @@ class TopSecret {
    * @throws {Error} If the key is not 32 bytes long.
    */
   set key(value) {
-    if (value.length !== 32) {
-      throw new Error("Key must be 32 bytes long.");
+    if (value.length !== 64) {
+      throw new Error("Key must be 64 bytes long.");
     }
-    this._key = value;
+
+    this._key = value.from("hex");
   }
 
   /**
@@ -237,5 +238,5 @@ class TopSecret {
   }
 }
 
-// Export AES256 class
+// Export TopSecret class
 module.exports = TopSecret;
