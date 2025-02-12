@@ -1,3 +1,5 @@
+// index.js:
+
 "use strict";
 
 // load necessary packages
@@ -47,25 +49,49 @@ class TopSecret {
   }
 
   /**
-   * Encrypt a JSON object with the current key (256-bit AES).
-   * The object is first serialized to a string and then encrypted.
-   * @param {Object} data - The JSON object to encrypt.
-   * @returns {string} The encrypted data, base64 encoded.
-   * @throws {Error} If the key is not set.
+   * Encrypt a file using the current key (256-bit AES).
+   * Reads the file, encrypts its contents, and saves the encrypted data to a destination file.
+   * @param {string} srcFilename - The path to the source file to encrypt.
+   * @param {string} dstFilename - The path to the destination file to save the encrypted content.
+   * @throws {Error} If file reading or encryption fails.
    */
-  encryptJSON(data) {
-    if (!this._key) {
-      throw new Error("Key is not set.");
+  encryptFile(srcFilename, dstFilename) {
+    try {
+      // Read the file's content into a buffer
+      const buffer = fs.readFileSync(srcFilename);
+
+      // Encrypt the buffer
+      const encryptedBuffer = this.encryptBuffer(buffer);
+
+      // Save the encrypted buffer to the destination file
+      fs.writeFileSync(dstFilename, encryptedBuffer);
+    } catch (error) {
+      console.error("Failed to encrypt file:", error);
+      throw new Error("Failed to encrypt file.");
     }
+  }
 
-    // Convert the object to a string
-    const jsonString = JSON.stringify(data);
+  /**
+   * Decrypt a file using the current key (256-bit AES).
+   * Reads the encrypted file, decrypts its contents, and saves the decrypted data to a destination file.
+   * @param {string} srcFilename - The path to the source file to decrypt.
+   * @param {string} dstFilename - The path to the destination file to save the decrypted content.
+   * @throws {Error} If file reading or decryption fails.
+   */
+  decryptFile(srcFilename, dstFilename) {
+    try {
+      // Read the encrypted file's content into a buffer
+      const encryptedBuffer = fs.readFileSync(srcFilename);
 
-    // Encrypt the string buffer
-    const encryptedBuffer = this.encryptBuffer(Buffer.from(jsonString, "utf8"));
+      // Decrypt the buffer
+      const decryptedBuffer = this.decryptBuffer(encryptedBuffer);
 
-    // Return the base64 encoded encrypted buffer
-    return encryptedBuffer.toString("base64");
+      // Save the decrypted buffer to the destination file
+      fs.writeFileSync(dstFilename, decryptedBuffer);
+    } catch (error) {
+      console.error("Failed to decrypt file:", error);
+      throw new Error("Failed to decrypt file.");
+    }
   }
 
   /**
@@ -92,6 +118,28 @@ class TopSecret {
       decipher.final(),
     ]);
     return decrypted;
+  }
+
+  /**
+   * Encrypt a JSON object with the current key (256-bit AES).
+   * The object is first serialized to a string and then encrypted.
+   * @param {Object} data - The JSON object to encrypt.
+   * @returns {string} The encrypted data, base64 encoded.
+   * @throws {Error} If the key is not set.
+   */
+  encryptJSON(data) {
+    if (!this._key) {
+      throw new Error("Key is not set.");
+    }
+
+    // Convert the object to a string
+    const jsonString = JSON.stringify(data);
+
+    // Encrypt the string buffer
+    const encryptedBuffer = this.encryptBuffer(Buffer.from(jsonString, "utf8"));
+
+    // Return the base64 encoded encrypted buffer
+    return encryptedBuffer.toString("base64");
   }
 
   /**
@@ -134,7 +182,7 @@ class TopSecret {
       throw new Error("Key must be 64 bytes long.");
     }
 
-    this._key = value.from("hex");
+    this._key = Buffer.from(value, "hex");
   }
 
   /**

@@ -1,6 +1,6 @@
 {
   "name": "topsecret",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Implements encryption/decryption of strings, JSON structures and disk files",
   "main": "index.js",
   "scripts": {
