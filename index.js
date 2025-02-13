@@ -97,7 +97,7 @@ class TopSecret {
   /**
    * Decrypt a buffer with the current key (256-bit AES).
    * @param {Buffer} buffer - The encrypted buffer, including the IV and ciphertext.
-   * @returns {Buffer} The decrypted plaintext buffer.
+   * @returns {string} The decrypted plaintext as a string.
    * @throws {Error} If the key is not set.
    */
   decryptBuffer(buffer) {
@@ -112,12 +112,14 @@ class TopSecret {
     // Create AES decipher with the current key and IV
     const decipher = crypto.createDecipheriv("aes-256-cbc", this._key, iv);
 
-    // Decrypt the buffer and return the plaintext
+    // Decrypt the buffer and return the plaintext as a string
     let decrypted = Buffer.concat([
       decipher.update(encryptedText),
       decipher.final(),
     ]);
-    return decrypted;
+
+    // Convert the decrypted buffer to a UTF-8 string
+    return decrypted.toString("utf-8");
   }
 
   /**
@@ -156,6 +158,54 @@ class TopSecret {
 
     // Decode the base64-encoded string to a encrypted buffer
     const encryptedBuffer = Buffer.from(encryptedData, "base64");
+
+    // Decrypt the buffer
+    const decryptedBuffer = this.decryptBuffer(encryptedBuffer);
+
+    // Convert the decrypted buffer back to a JSON object
+    return JSON.parse(decryptedBuffer.toString("utf8"));
+  }
+
+  /**
+   * Encrypts a JSON object and saves it to a file.
+   * This method converts the JSON object to a string, encrypts it using the current key,
+   * and writes the encrypted buffer to the specified file.
+   *
+   * @param {Object} data - The JSON object to encrypt.
+   * @param {string} filename - The path to the file where the encrypted data will be saved.
+   * @throws {Error} If the key is not set or if the encryption fails.
+   */
+  encryptJSONToFile(data, filename) {
+    if (!this._key) {
+      throw new Error("Key is not set.");
+    }
+
+    // Convert the object to a string
+    const jsonString = JSON.stringify(data);
+
+    // Encrypt the string buffer
+    const encryptedBuffer = this.encryptBuffer(Buffer.from(jsonString, "utf8"));
+
+    // Save the encrypted buffer to the destination file
+    fs.writeFileSync(filename, encryptedBuffer);
+  }
+
+  /**
+   * Loads an encrypted file, decrypts its content, and parses it into a JSON object.
+   * This method reads the encrypted file, decrypts the content using the current key,
+   * and parses the decrypted buffer back into a JSON object.
+   *
+   * @param {string} filename - The path to the encrypted file.
+   * @returns {Object} The decrypted and parsed JSON object.
+   * @throws {Error} If the key is not set or if decryption fails.
+   */
+  decryptJSONFromFile(filename) {
+    if (!this._key) {
+      throw new Error("Key is not set.");
+    }
+
+    // Read the encrypted buffer from the file
+    const encryptedBuffer = fs.readFileSync(filename);
 
     // Decrypt the buffer
     const decryptedBuffer = this.decryptBuffer(encryptedBuffer);
