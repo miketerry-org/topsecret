@@ -1,11 +1,11 @@
 {
   "name": "topsecret",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Implements encryption/decryption of strings, JSON structures and disk files",
   "main": "index.js",
   "scripts": {
     "dev": "node_env=dev node --watch index.js",
-    "test": "jest --watch"
+    "test": "jest --bail --watch"
   },
   "repository": {
     "type": "git",
