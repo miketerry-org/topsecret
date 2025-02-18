@@ -49,6 +49,34 @@ class TopSecret {
   }
 
   /**
+   * Decrypt a buffer with the current key (256-bit AES).
+   * @param {Buffer} buffer - The encrypted buffer, including the IV and ciphertext.
+   * @returns {string} The decrypted plaintext as a string.
+   * @throws {Error} If the key is not set.
+   */
+  decryptBuffer(buffer) {
+    if (!this._key) {
+      throw new Error("Key is not set.");
+    }
+
+    // Extract the IV from the first 16 bytes of the buffer
+    const iv = buffer.slice(0, 16);
+    const encryptedText = buffer.slice(16);
+
+    // Create AES decipher with the current key and IV
+    const decipher = crypto.createDecipheriv("aes-256-cbc", this._key, iv);
+
+    // Decrypt the buffer and return the plaintext as a string
+    let decrypted = Buffer.concat([
+      decipher.update(encryptedText),
+      decipher.final(),
+    ]);
+
+    // Convert the decrypted buffer to a UTF-8 string
+    return decrypted.toString("utf-8");
+  }
+
+  /**
    * Encrypt a file using the current key (256-bit AES).
    * Reads the file, encrypts its contents, and saves the encrypted data to a destination file.
    * @param {string} srcFilename - The path to the source file to encrypt.
@@ -92,34 +120,6 @@ class TopSecret {
       console.error("Failed to decrypt file:", error);
       throw new Error("Failed to decrypt file.");
     }
-  }
-
-  /**
-   * Decrypt a buffer with the current key (256-bit AES).
-   * @param {Buffer} buffer - The encrypted buffer, including the IV and ciphertext.
-   * @returns {string} The decrypted plaintext as a string.
-   * @throws {Error} If the key is not set.
-   */
-  decryptBuffer(buffer) {
-    if (!this._key) {
-      throw new Error("Key is not set.");
-    }
-
-    // Extract the IV from the first 16 bytes of the buffer
-    const iv = buffer.slice(0, 16);
-    const encryptedText = buffer.slice(16);
-
-    // Create AES decipher with the current key and IV
-    const decipher = crypto.createDecipheriv("aes-256-cbc", this._key, iv);
-
-    // Decrypt the buffer and return the plaintext as a string
-    let decrypted = Buffer.concat([
-      decipher.update(encryptedText),
-      decipher.final(),
-    ]);
-
-    // Convert the decrypted buffer to a UTF-8 string
-    return decrypted.toString("utf-8");
   }
 
   /**
@@ -228,11 +228,11 @@ class TopSecret {
    * @throws {Error} If the key is not 32 bytes long.
    */
   set key(value) {
-    if (value.length !== 64) {
+    if (value.length === 64) {
+      this._key = Buffer.from(value, "hex");
+    } else {
       throw new Error("Key must be 64 bytes long.");
     }
-
-    this._key = Buffer.from(value, "hex");
   }
 
   /**
