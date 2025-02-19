@@ -1,6 +1,6 @@
 // index.js:
-
-"use strict";
+//
+// "use strict";
 
 // load necessary packages
 const crypto = require("crypto");
@@ -74,6 +74,42 @@ class TopSecret {
 
     // Convert the decrypted buffer to a UTF-8 string
     return decrypted.toString("utf-8");
+  }
+
+  /**
+   * Decrypts environment variables from an encrypted file and sets them to `process.env`.
+   * @param {string} filename - The path to the encrypted file.
+   * @throws {Error} If the decryption or file reading fails.
+   */
+  decryptEnvFromFile(filename) {
+    if (!this._key) {
+      throw new Error("Key is not set.");
+    }
+
+    try {
+      // Load the encrypted file into memory
+      const encryptedBuffer = fs.readFileSync(filename);
+
+      // Decrypt the file buffer
+      const decryptedText = this.decryptBuffer(encryptedBuffer);
+
+      // Split the decrypted text into lines
+      const lines = decryptedText.split("\n");
+
+      // Iterate over each line and parse the name and value for environment variables
+      lines.forEach((line) => {
+        if (line.trim()) {
+          const [name, value] = line.split("=");
+
+          if (name && value) {
+            process.env[name.trim()] = value.trim();
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Failed to decrypt and load environment variables:", error);
+      throw new Error("Failed to decrypt and load environment variables.");
+    }
   }
 
   /**
@@ -156,7 +192,7 @@ class TopSecret {
       throw new Error("Key is not set.");
     }
 
-    // Decode the base64-encoded string to a encrypted buffer
+    // Decode the base64-encoded string to an encrypted buffer
     const encryptedBuffer = Buffer.from(encryptedData, "base64");
 
     // Decrypt the buffer
