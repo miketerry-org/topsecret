@@ -264,7 +264,7 @@ class TopSecret {
    * @throws {Error} If the key is not 32 bytes long.
    */
   set key(value) {
-    if (value.length === 64) {
+    if (value && value.length === 64) {
       this._key = Buffer.from(value, "hex");
     } else {
       throw new Error("Key must be 64 bytes long.");
