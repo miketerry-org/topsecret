@@ -97,7 +97,7 @@ class TopSecret {
       const lines = decryptedText.split("\n");
 
       // Iterate over each line and parse the name and value for environment variables
-      lines.forEach((line) => {
+      lines.forEach(line => {
         if (line.trim()) {
           const [name, value] = line.split("=");
 
@@ -301,7 +301,7 @@ class TopSecret {
    * @returns {Buffer} The decrypted buffer.
    * @throws {Error} If file reading or decryption fails.
    */
-  loadBufferFromFile(filename) {
+  decryptBufferFromFile(filename) {
     try {
       // Read the encrypted buffer from the file
       const encryptedBuffer = fs.readFileSync(filename);
