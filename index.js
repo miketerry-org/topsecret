@@ -227,6 +227,27 @@ class TopSecret {
   }
 
   /**
+   * Loads an encrypted file, decrypts its content, and return a string buffer.
+   * This method reads the encrypted file, decrypts the content using the current key,
+   * and parses the decrypted buffer back into a string buffer.
+   *
+   * @param {string} filename - The path to the encrypted file.
+   * @returns {strringThe decrypted buffer.
+   * @throws {Error} If the key is not set or if decryption fails.
+   */
+  decryptBufferFromFile(filename) {
+    if (!this._key) {
+      throw new Error("Key is not set.");
+    }
+
+    // Read the encrypted buffer from the file
+    const encryptedBuffer = fs.readFileSync(filename);
+
+    // Decrypt the buffer
+    return this.decryptBuffer(encryptedBuffer);
+  }
+
+  /**
    * Loads an encrypted file, decrypts its content, and parses it into a JSON object.
    * This method reads the encrypted file, decrypts the content using the current key,
    * and parses the decrypted buffer back into a JSON object.
@@ -236,15 +257,8 @@ class TopSecret {
    * @throws {Error} If the key is not set or if decryption fails.
    */
   decryptJSONFromFile(filename) {
-    if (!this._key) {
-      throw new Error("Key is not set.");
-    }
-
-    // Read the encrypted buffer from the file
-    const encryptedBuffer = fs.readFileSync(filename);
-
-    // Decrypt the buffer
-    const decryptedBuffer = this.decryptBuffer(encryptedBuffer);
+    // load from file and Decrypt the buffer
+    const decryptedBuffer = this.decryptBufferFromFile(filename);
 
     // Convert the decrypted buffer back to a JSON object
     return JSON.parse(decryptedBuffer.toString("utf8"));
