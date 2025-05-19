@@ -21,7 +21,7 @@ class TopSecret {
    * Generates a random 256-bit key (32 bytes) for encryption.
    * @returns {Buffer} The generated 256-bit AES key.
    */
-  get generateKey() {
+  generateKey() {
     this._key = crypto.randomBytes(32);
     return this._key.toString("hex");
   }
