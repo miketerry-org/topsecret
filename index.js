@@ -1,6 +1,6 @@
 // index.js:
-//
-// "use strict";
+
+"use strict";
 
 // load necessary packages
 const crypto = require("crypto");
