@@ -1,6 +1,6 @@
 {
   "name": "topsecret",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Implements encryption/decryption of strings, JSON structures and disk files",
   "main": "index.js",
   "scripts": {
@@ -31,5 +31,8 @@
   "bugs": {
     "url": "https://github.com/miketerry-1030/topsecret/issues"
   },
-  "homepage": "https://github.com/miketerry-1030/topsecret#readme"
+  "homepage": "https://github.com/miketerry-1030/topsecret#readme",
+  "devDependencies": {
+    "jest": "^30.4.2"
+  }
 }
